@@ -7,9 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Pengiriman Uang</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
 
 <body>
+    <form action="table/insert" method="POST">
+        <input type="text" name="month">
+        <input type="number" name="year">
+        <input type="number" name="item">
+        <input type="number" name="jumlah">
+        <input type="submit" value="submit">
+    </form>
     <table id="example" class="display" style="width:100%">
         <thead>
             <tr>
@@ -17,39 +25,104 @@
                 <th>Tahun</th>
                 <th>Item</th>
                 <th>Jumlah</th>
+                <th>Action Edit</th>
+                <th>Action Delete</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="table-body">
             <tr>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td>61</td>
-            </tr>
-            <tr>
-                <td>Garrett Winters</td>
-                <td>Accountant</td>
-                <td>Tokyo</td>
-                <td>63</td>
-            </tr>
-            <tr>
-                <td>Ashton Cox</td>
-                <td>Junior Technical Author</td>
-                <td>San Francisco</td>
-                <td>66</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
         </tbody>
     </table>
-
+    <div id="modal"></div>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script type="text/javascript" charset="utf8"
         src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
     <script>
+        var table = $('#table-body');
+
+        $.get('http://www.localhost:8080/table/get-transfer', {}, function (data) {
+            for (var i = 0; i < data.length; i++) {
+                table.append('<tr>'
+                    + '<td>' + data[i].month + '</td>'
+                    + '<td>' + data[i].year + '</td>'
+                    + '<td>' + data[i].item + '</td>'
+                    + '<td>' + data[i].jumlah + '</td>'
+                    + '<td>' +
+                    '<a href="#my_modal_' + data[i].id + '" data-toggle="modal" data-id="' + data[i].id + '">Edit</a>' +
+
+                    '<div class="modal" id="my_modal_' + data[i].id + '">' +
+                    '<form action="/table/update" method="POST">' +
+                    '<div class="modal-dialog">' +
+                    '<div class="modal-content">' +
+                    '<div class="modal-header">' +
+                    '<button type="button" class="close" data-dismiss="modal"><span' +
+                    'aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
+                    '<h4 class="modal-title">Edit</h4>' +
+                    '</div>' +
+
+                    '<div class="modal-body">' +
+                    '<div class="form-group">' +
+                    '<label for="txt" class="control-label">Month:</label>' +
+                    '<input type="text" name="month" class="form-control" autofocus="autofocus" placeholder="Jul" value="' + data[i].month + '"/>' +
+                    ' </div>' +
+                    ' <div class="form-group">' +
+                    ' <label for="txt" class="control-label">Year:</label>' +
+                    '<input type="number" name="year" class="form-control" autofocus="autofocus" placeholder="2020"  value="' + data[i].year + '"/>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label for="txt" class="control-label">Item:</label>' +
+                    '<input type="number" name="item" class="form-control" autofocus="autofocus" placeholder="125" value="' + data[i].item + '" />' +
+                    ' </div>' +
+                    '<div class="form-group">' +
+                    '<label for="txt" class="control-label">Jumlah:</label>' +
+                    '<input type="number" name="jumlah" class="form-control" autofocus="autofocus" placeholder="120210" value="' + data[i].jumlah + '" />' +
+                    '<input type="hidden" value="' + data[i].id + '" name="id">' +
+
+                    '</div>' +
+                    '</div>' +
+
+                    '<div class="modal-footer">' +
+                    '<input  type="submit" class="btn btn-primary" value="submit">' +
+                    '<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>' +
+                    ' </div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</form>' +
+                    '</div>' +
+                    '</td>' +
+                    '<td>' +
+                    '<a href="delete/table/' + data[i].id + '"> Delete</a>' +
+                    '</td>' +
+                    '</tr>');
+            }
+
+            console.log(data);
+        });
+
         $(document).ready(function () {
             $('#example').DataTable();
         });
+        $('#my_modal').on('show.bs.modal', function (e) {
+            var id = $(e.relatedTarget).data('id');
+            var that = $(this);
+            $(this).find('button[id="save"]').click(function () {
+                var txt = that.find('input[id="txt"]').val();
+                alert(id);
+                alert(txt);
+            });
+
+        });
     </script>
+
 </body>
 
 

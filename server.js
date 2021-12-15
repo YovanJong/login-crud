@@ -43,4 +43,44 @@ app.post('/auth', function (request, response) {
     }
 });
 
+app.post('/table/insert', function (request, response) {
+    var month = request.body.month;
+    var year = request.body.year;
+    var item = request.body.item;
+    var jumlah = request.body.jumlah;
+
+    connection.query("INSERT INTO transfers (month,year,item,jumlah) VALUES(?,?,?,?)", [month, year, item, jumlah], function (error, results, fields) {
+        if (error) throw err;
+        response.end();
+    });
+});
+
+app.post('/table/update', function (request, response) {
+    var month = request.body.month;
+    var year = request.body.year;
+    var item = request.body.item;
+    var jumlah = request.body.jumlah;
+    var id = request.body.id;
+    console.log(id);
+    connection.query("UPDATE transfers SET month = ? , year = ? , item = ? , jumlah = ? WHERE id = ?", [month, year, item, jumlah, id], function (error, results, fields) {
+        if (error) throw err;
+        response.end();
+    });
+});
+
+app.get('/delete/table/:id', function (request, response) {
+    var id = request.params.id;
+    connection.query("DELETE FROM transfers where id=? ", [id], function (error, results, fields) {
+        if (error) throw err;
+        response.end();
+    });
+});
+
+app.get('/table/get-transfer', function (request, response) {
+    connection.query('SELECT * FROM transfers', function (error, results, fields) {
+        if (error) throw err;
+        response.send(results);
+    });
+});
+
 app.listen(8080, '127.0.0.1')
